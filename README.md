@@ -1,43 +1,44 @@
 # Odify
 
-A lead generation tool that searches the web for businesses in a specific niche and country, scrapes their contact info (email & phone), and saves it to a CSV file.
+A lead generation tool with a web UI. Searches for businesses in a specific niche and country, scrapes their contact info (email & phone), and lets you download as CSV or vCard (saves directly to contacts).
 
-## Setup
+## Quick Start
 
+### CLI version
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+cd server
+python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+# edit .env → python src/model/ody/odify.py
 ```
 
-## Usage
-
-1. Edit `.env` to configure your search:
-
-```
-SEARCH_QUERY="plumber in"
-COUNTRY="USA"
-MAX_RESULTS=10
-OUTPUT_FILE="output/leads.csv"
-```
-
-2. Run the scraper:
-
+### Web UI
 ```bash
+cd server
 source venv/bin/activate
-python src/scraper.py
+uvicorn main:buildApp --reload --port 8000
 ```
 
-Results are saved to `output/leads.csv`.
+Open http://localhost:8000 — input your niche + country, hit Search, and:
+- Copy any email or phone with one click
+- Download all as CSV
+- Download as vCard (`.vcf`) — opening this saves the contact to your address book
 
 ## Project Structure
 
 ```
-├── .env              # Configuration
-├── src/
-│   └── scraper.py    # Main scraper
-├── output/           # CSV output directory
-├── requirements.txt
+├── server/
+│   ├── .env
+│   ├── main.py              # FastAPI entry point
+│   ├── appSetup.py           # Routes
+│   ├── requirements.txt
+│   ├── src/
+│   │   ├── templates/
+│   │   │   └── index.html    # Web UI
+│   │   └── model/ody/
+│   │       ├── odify.py      # Scraper core
+│   │       └── services.py   # CSV/vCard generation
+│   └── output/
+├── client/                   # (future use)
 ├── LICENSE
 └── README.md
 ```

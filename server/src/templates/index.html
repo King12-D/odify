@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Odify — Lead Scraper</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a; color: #e2e8f0;
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1rem; width: 100%; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.25rem; }
+    p.sub { color: #94a3b8; margin-bottom: 2rem; }
+
+    .card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr 120px; gap: 1rem; align-items: end; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #94a3b8; margin-bottom: 0.35rem; }
+    .form-group input {
+      width: 100%; padding: 0.65rem 0.75rem; border-radius: 8px; border: 1px solid #475569;
+      background: #0f172a; color: #e2e8f0; font-size: 0.95rem; outline: none;
+    }
+    .form-group input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.3); }
+    button {
+      cursor: pointer; padding: 0.65rem 1.25rem; border-radius: 8px; border: none;
+      font-weight: 600; font-size: 0.9rem; transition: background 0.2s;
+    }
+    .btn-primary { background: #3b82f6; color: #fff; width: 100%; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .spinner { display: none; margin-top: 1rem; text-align: center; color: #94a3b8; }
+    .spinner.active { display: block; }
+    .spinner::after {
+      content: ''; display: inline-block; width: 20px; height: 20px;
+      border: 2px solid #475569; border-top-color: #3b82f6; border-radius: 50%;
+      animation: spin 0.6s linear infinite; margin-right: 0.5rem; vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toolbar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .btn-secondary { background: #334155; color: #e2e8f0; }
+    .btn-secondary:hover { background: #475569; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.75rem 0.5rem; border-bottom: 1px solid #334155; font-size: 0.9rem; }
+    th { color: #94a3b8; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td.url-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    td.url-cell a { color: #60a5fa; text-decoration: none; }
+    td.url-cell a:hover { text-decoration: underline; }
+    .contact-cell { max-width: 200px; word-break: break-all; }
+    .badge {
+      display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px;
+      font-size: 0.75rem; margin: 0.1rem;
+    }
+    .badge-email { background: #1e3a5f; color: #93c5fd; }
+    .badge-phone { background: #14532d; color: #86efac; }
+    .copy-btn {
+      background: none; border: 1px solid #475569; color: #94a3b8; padding: 0.2rem 0.5rem;
+      border-radius: 4px; font-size: 0.7rem; margin-left: 0.25rem;
+    }
+    .copy-btn:hover { border-color: #3b82f6; color: #60a5fa; }
+    .copy-btn.copied { border-color: #22c55e; color: #86efac; }
+
+    .empty { text-align: center; padding: 3rem 1rem; color: #64748b; }
+    footer { margin-top: auto; text-align: center; padding: 1.5rem; color: #475569; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Odify</h1>
+    <p class="sub">Search for businesses, scrape emails &amp; phones, download as CSV or vCard.</p>
+
+    <div class="card">
+      <form id="searchForm" class="form-grid">
+        <div class="form-group">
+          <label for="niche">Niche</label>
+          <input type="text" id="niche" name="niche" placeholder="plumber" value="plumber" required>
+        </div>
+        <div class="form-group">
+          <label for="country">Country</label>
+          <input type="text" id="country" name="country" placeholder="USA" value="USA" required>
+        </div>
+        <div class="form-group">
+          <label for="max_results">Results</label>
+          <input type="number" id="max_results" name="max_results" value="10" min="1" max="50">
+        </div>
+        <button type="submit" class="btn-primary" id="searchBtn">Search</button>
+      </form>
+      <div class="spinner" id="spinner">Scraping pages...</div>
+    </div>
+
+    <div id="resultsArea" style="display:none;">
+      <div class="toolbar">
+        <button class="btn-secondary" id="downloadCsvBtn">Download CSV</button>
+        <button class="btn-secondary" id="downloadVcardsBtn">Download All vCards</button>
+      </div>
+
+      <div class="card" style="padding:0; overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>URL</th>
+              <th>Emails</th>
+              <th>Phones</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>Odify &mdash; Lead generation tool for freelancers</footer>
+
+  <script>
+    let currentSessionId = null;
+
+    document.getElementById('searchForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('searchBtn');
+      const spinner = document.getElementById('spinner');
+      const resultsArea = document.getElementById('resultsArea');
+      const tbody = document.getElementById('resultsBody');
+
+      btn.disabled = true;
+      spinner.classList.add('active');
+      resultsArea.style.display = 'none';
+      tbody.innerHTML = '';
+
+      const fd = new FormData(e.target);
+
+      try {
+        const res = await fetch('/search', { method: 'POST', body: fd });
+        const data = await res.json();
+        currentSessionId = data.session_id;
+
+        if (data.results.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" class="empty">No results found.</td></tr>`;
+        } else {
+          data.results.forEach((r, i) => {
+            const tr = document.createElement('tr');
+            const emailsHtml = r.emails.length
+              ? r.emails.map(e => `<span class="badge badge-email">${e}<button class="copy-btn" data-copy="${e}">copy</button></span>`).join(' ')
+              : '<span style="color:#475569;">—</span>';
+            const phonesHtml = r.phones.length
+              ? r.phones.map(p => `<span class="badge badge-phone">${p}<button class="copy-btn" data-copy="${p}">copy</button></span>`).join(' ')
+              : '<span style="color:#475569;">—</span>';
+
+            tr.innerHTML = `
+              <td>${i + 1}</td>
+              <td class="url-cell"><a href="${r.url}" target="_blank" rel="noopener">${r.url}</a></td>
+              <td class="contact-cell">${emailsHtml}</td>
+              <td class="contact-cell">${phonesHtml}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+
+          document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+              navigator.clipboard.writeText(this.dataset.copy).then(() => {
+                this.textContent = 'copied!';
+                this.classList.add('copied');
+                setTimeout(() => {
+                  this.textContent = 'copy';
+                  this.classList.remove('copied');
+                }, 1500);
+              });
+            });
+          });
+        }
+
+        resultsArea.style.display = 'block';
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" class="empty">Error: ${err.message}</td></tr>`;
+        resultsArea.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        spinner.classList.remove('active');
+      }
+    });
+
+    document.getElementById('downloadCsvBtn').addEventListener('click', () => {
+      if (currentSessionId) window.location.href = `/download/csv/${currentSessionId}`;
+    });
+
+    document.getElementById('downloadVcardsBtn').addEventListener('click', () => {
+      if (currentSessionId) window.location.href = `/download/all-vcards/${currentSessionId}`;
+    });
+  </script>
+</body>
+</html>
