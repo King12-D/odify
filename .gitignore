@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .env
 output/*.csv
+server/venv/
+server/__pycache__/
+server/.env
+server/output/*.csv

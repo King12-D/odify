@@ -1,20 +1,9 @@
-import csv
 import re
 import time
-import os
-from urllib.parse import urlparse, urljoin
 
 import requests
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 from ddgs import DDGS
-
-load_dotenv()
-
-SEARCH_QUERY = os.getenv("SEARCH_QUERY", "plumber in")
-COUNTRY = os.getenv("COUNTRY", "USA")
-MAX_RESULTS = int(os.getenv("MAX_RESULTS", 10))
-OUTPUT_FILE = os.getenv("OUTPUT_FILE", "leads.csv")
 
 HEADERS = {
     "User-Agent": (
@@ -57,40 +46,20 @@ def scrape_page(url):
         return [], []
 
 
-def main():
-    query = f"{SEARCH_QUERY} {COUNTRY}"
-    print(f"[*] Searching: {query}")
-    print(f"[*] Max results: {MAX_RESULTS}")
-
+def search_and_scrape(query, max_results=10):
     urls = []
-    try:
-        with DDGS() as ddgs:
-            for r in ddgs.text(query, max_results=MAX_RESULTS):
-                urls.append(r["href"])
-    except Exception as e:
-        print(f"[!] Search failed: {e}")
-        return
-
-    print(f"[*] Found {len(urls)} URLs")
+    with DDGS() as ddgs:
+        for r in ddgs.text(query, max_results=max_results):
+            urls.append(r["href"])
 
     results = []
-    for i, url in enumerate(urls, 1):
-        print(f"[{i}/{len(urls)}] Scraping: {url}")
+    for url in urls:
         emails, phones = scrape_page(url)
         results.append({
             "url": url,
-            "emails": ", ".join(emails) if emails else "",
-            "phones": ", ".join(phones) if phones else "",
+            "emails": emails,
+            "phones": phones,
         })
         time.sleep(1)
 
-    with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["url", "emails", "phones"])
-        writer.writeheader()
-        writer.writerows(results)
-
-    print(f"\n[✓] Done! {len(results)} leads saved to {OUTPUT_FILE}")
-
-
-if __name__ == "__main__":
-    main()
+    return results
