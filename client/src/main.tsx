@@ -3,18 +3,16 @@ import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider } from '@tanstack/react-router'
 import { router } from './routeTree'
-import { ToastContainer } from './components/Toast'
-import './index.css'
+import './styles/globals.css'
 
 const queryClient = new QueryClient({
-  defaultOptions: { mutations: { retry: 1 } },
+  defaultOptions: { queries: { staleTime: 30000, retry: 1 }, mutations: { retry: 0 } },
 })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
-      <ToastContainer />
     </QueryClientProvider>
   </StrictMode>,
 )

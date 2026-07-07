@@ -1,20 +1,13 @@
 import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router'
-import Index from './routes/index.lazy'
+import { RootLayout } from './routes/__root'
+import { IndexPage } from './routes/landing'
 
-const rootRoute = createRootRoute()
-
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: Index,
-})
-
+const rootRoute = createRootRoute({ component: RootLayout })
+const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: IndexPage })
 const routeTree = rootRoute.addChildren([indexRoute])
 
 export const router = createRouter({ routeTree })
 
 declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router
-  }
+  interface Register { router: typeof router }
 }

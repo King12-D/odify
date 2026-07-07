@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-background: #faf8f5;
+  --color-foreground: #1c1917;
+  --color-card: #ffffff;
+  --color-card-foreground: #1c1917;
+  --color-card-hover: #f5f3ef;
+  --color-muted: #f0ede8;
+  --color-muted-foreground: #6b6560;
+  --color-border: #e6e2db;
+  --color-border-hover: #d0cac1;
+  --color-input: #e6e2db;
+  --color-primary: #FF6B35;
+  --color-primary-foreground: #ffffff;
+  --color-primary-hover: #E85D04;
+  --color-primary-subtle: rgba(255, 107, 53, 0.08);
+  --color-accent: #06B6D4;
+  --color-accent-foreground: #ffffff;
+  --color-accent-hover: #0891B2;
+  --color-accent-subtle: rgba(6, 182, 212, 0.08);
+  --color-destructive: #EF4444;
+  --color-destructive-foreground: #ffffff;
+  --color-destructive-subtle: rgba(239, 68, 68, 0.08);
+  --color-warning: #F59E0B;
+  --color-warning-subtle: rgba(245, 158, 11, 0.08);
+  --color-info-subtle: rgba(255, 107, 53, 0.08);
+  --color-sidebar: #ffffff;
+  --color-sidebar-border: #e6e2db;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --font-sans: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Orbitron', 'Space Grotesk', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --shadow-card: 0 1px 3px rgba(28,25,23,0.04), 0 2px 8px rgba(28,25,23,0.03);
+  --shadow-card-hover: 0 4px 16px rgba(28,25,23,0.06), 0 8px 32px rgba(28,25,23,0.04);
+  --shadow-lg: 0 8px 32px rgba(28,25,23,0.08);
+
+  --animate-fade-in: fade-in 0.6s ease-out forwards;
+  --animate-fade-up: fade-up 0.6s ease-out forwards;
+  --animate-scale-in: scale-in 0.4s ease-out forwards;
+  --animate-shimmer: shimmer 2s linear infinite;
+
+  @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fade-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
+  ::selection { background: rgba(255, 107, 53, 0.2); }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-muted-foreground); }
+}
+
+@utility glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+@utility glass-light {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+@utility gradient-text {
+  background: linear-gradient(to right, #FF6B35, #06B6D4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility gradient-primary {
+  background: linear-gradient(135deg, #FF6B35, #F97316);
+}
+
+@utility gradient-accent {
+  background: linear-gradient(135deg, #06B6D4, #0891B2);
+}
+
+@utility glow-primary {
+  box-shadow: 0 0 24px rgba(255, 107, 53, 0.15), 0 0 48px rgba(255, 107, 53, 0.05);
+}
+
+@utility glow-accent {
+  box-shadow: 0 0 24px rgba(6, 182, 212, 0.15), 0 0 48px rgba(6, 182, 212, 0.05);
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
