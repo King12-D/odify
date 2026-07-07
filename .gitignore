@@ -3,6 +3,8 @@ __pycache__/
 *.pyc
 .env
 output/*.csv
+client/node_modules/
+client/dist/
 server/venv/
 server/__pycache__/
 server/.env

@@ -1,10 +1,20 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { RouterProvider } from '@tanstack/react-router'
+import { router } from './routeTree'
+import { ToastContainer } from './components/Toast'
 import './index.css'
-import App from './App.tsx'
+
+const queryClient = new QueryClient({
+  defaultOptions: { mutations: { retry: 1 } },
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <ToastContainer />
+    </QueryClientProvider>
   </StrictMode>,
 )
