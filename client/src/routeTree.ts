@@ -1,12 +1,12 @@
 import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router'
-import { Route as IndexRoute } from './routes/index.lazy'
+import Index from './routes/index.lazy'
 
 const rootRoute = createRootRoute()
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: IndexRoute.options.component,
+  component: Index,
 })
 
 const routeTree = rootRoute.addChildren([indexRoute])
