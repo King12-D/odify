@@ -4,6 +4,7 @@ from fastapi.responses import PlainTextResponse
 
 from src.modules.ody.services import (
     run_search,
+    run_search_places,
     generate_csv,
     generate_vcard_for_result,
     generate_all_vcards,
@@ -45,6 +46,19 @@ def search(
             }
             for r in data
         ],
+    }
+
+
+@buildApp.post("/search-places")
+def search_places(
+    niche: str = Form(...),
+    location: str = Form(...),
+    max_results: int = Form(30),
+):
+    session_id, data = run_search_places(niche, location, max_results)
+    return {
+        "session_id": session_id,
+        "results": data,
     }
 
 
