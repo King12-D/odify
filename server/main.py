@@ -1,0 +1,1 @@
+from appSetup import buildApp
