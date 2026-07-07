@@ -1,4 +1,4 @@
-import { createLazyFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { SearchForm } from '../components/SearchForm'
 import { ResultsTable } from '../components/ResultsTable'
@@ -7,7 +7,9 @@ import { useSearch, csvUrl, vcardsUrl } from '../api/search'
 import { toast } from '../components/Toast'
 import type { LeadResult } from '../types'
 
-export const Route = createLazyFileRoute('/')({ component: Index })
+export const Route = createFileRoute('/')({
+  component: Index,
+})
 
 function Index() {
   const search = useSearch()

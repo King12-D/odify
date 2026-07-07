@@ -2,7 +2,7 @@ from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
-from src.model.ody.services import (
+from src.modules.ody.services import (
     run_search,
     generate_csv,
     generate_vcard_for_result,
