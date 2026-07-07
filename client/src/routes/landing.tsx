@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Search, Download, Loader2, AlertCircle, Building2, Phone, MapPin, Check } from 'lucide-react'
+import { Search, Download, Loader2, AlertCircle, Building2, Phone, MapPin, Check, UserPlus, Copy, ClipboardList } from 'lucide-react'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Card, CardContent } from '../components/ui/card'
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/table'
-import { searchPlaces, csvUrl } from '../lib/api'
+import { searchPlaces, csvUrl, vcardUrl, allVcardsUrl } from '../lib/api'
 import { toast } from './__root'
 import type { PlaceLead } from '../types'
 
@@ -225,16 +225,37 @@ export function IndexPage() {
               <div className="flex items-center gap-3 flex-wrap">
                 <Badge variant="info">{leads.length} businesses found</Badge>
                 <Badge variant="warning">No website</Badge>
-                {sessionId && (
+              </div>
+
+              {/* Toolbar */}
+              {sessionId && (
+                <div className="flex flex-wrap gap-2">
                   <a
                     href={csvUrl(sessionId)}
                     download
                     className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-primary text-white hover:bg-primary-hover transition-all glow-primary"
                   >
-                    <Download className="w-4 h-4" /> Download CSV
+                    <Download className="w-4 h-4" /> CSV
                   </a>
-                )}
-              </div>
+                  <a
+                    href={allVcardsUrl(sessionId)}
+                    download
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-white text-zinc-700 hover:bg-zinc-50 border border-zinc-200 transition-all"
+                  >
+                    <Download className="w-4 h-4" /> All vCards
+                  </a>
+                  <button
+                    onClick={() => {
+                      const phones = leads.map(l => l.phone).filter(Boolean).join('\n')
+                      navigator.clipboard.writeText(phones)
+                      toast('Phone numbers copied to clipboard')
+                    }}
+                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl bg-white text-zinc-700 hover:bg-zinc-50 border border-zinc-200 transition-all"
+                  >
+                    <ClipboardList className="w-4 h-4" /> Copy All Phones
+                  </button>
+                </div>
+              )}
 
               {/* Table */}
               <div className="rounded-2xl border border-zinc-200 overflow-hidden bg-white shadow-sm">
@@ -279,15 +300,29 @@ export function IndexPage() {
                           )}
                         </TableCell>
                         <TableCell>
-                          {lead.phone && (
+                          <div className="flex items-center gap-1">
                             <button
-                              onClick={() => { navigator.clipboard.writeText(lead.phone); toast('Phone copied!') }}
-                              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-all text-xs"
-                              title="Copy phone"
+                              onClick={() => {
+                                const text = `${lead.name}${lead.phone ? ` — ${lead.phone}` : ''}`
+                                navigator.clipboard.writeText(text)
+                                toast('Copied to clipboard')
+                              }}
+                              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-all"
+                              title="Copy"
                             >
-                              <Download className="w-3.5 h-3.5" />
+                              <Copy className="w-3.5 h-3.5" />
                             </button>
-                          )}
+                            {sessionId && (
+                              <a
+                                href={vcardUrl(sessionId, i)}
+                                download
+                                className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-all"
+                                title="Save to Contact"
+                              >
+                                <UserPlus className="w-3.5 h-3.5" />
+                              </a>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

@@ -33,3 +33,11 @@ export async function searchPlaces(
 export function csvUrl(sessionId: string) {
   return `${BASE}/download/csv/${sessionId}`
 }
+
+export function vcardUrl(sessionId: string, idx: number) {
+  return `${BASE}/download/vcard/${sessionId}/${idx}`
+}
+
+export function allVcardsUrl(sessionId: string) {
+  return `${BASE}/download/all-vcards/${sessionId}`
+}
