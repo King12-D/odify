@@ -128,8 +128,7 @@ export function IndexPage() {
                       type="number"
                       value={maxResults}
                       onChange={e => setMaxResults(Number(e.target.value))}
-                      min={1}
-                      max={60}
+                      max={50}
                     />
                   </div>
                   <Button type="submit" disabled={loading || !niche.trim() || !location.trim()}>

@@ -108,6 +108,15 @@
   box-shadow: 0 0 24px rgba(6, 182, 212, 0.15), 0 0 48px rgba(6, 182, 212, 0.05);
 }
 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 @utility no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
