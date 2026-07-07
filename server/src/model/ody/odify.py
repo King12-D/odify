@@ -3,7 +3,6 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
-from ddgs import DDGS
 
 HEADERS = {
     "User-Agent": (
@@ -46,11 +45,44 @@ def scrape_page(url):
         return [], []
 
 
-def search_and_scrape(query, max_results=10):
+def search_duckduckgo(query, max_results=10):
     urls = []
-    with DDGS() as ddgs:
-        for r in ddgs.text(query, max_results=max_results):
-            urls.append(r["href"])
+    try:
+        from ddgs import DDGS
+        with DDGS() as ddgs:
+            for r in ddgs.text(query, max_results=max_results):
+                urls.append(r["href"])
+    except Exception:
+        pass
+    return urls
+
+
+def search_duckduckgo_fallback(query, max_results=10):
+    urls = []
+    try:
+        params = {"q": query}
+        resp = requests.get(
+            "https://html.duckduckgo.com/html/",
+            params=params,
+            headers=HEADERS,
+            timeout=10,
+        )
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for a in soup.select("a.result__a"):
+            href = a.get("href", "")
+            if href and href.startswith("http"):
+                urls.append(href)
+                if len(urls) >= max_results:
+                    break
+    except Exception:
+        pass
+    return urls
+
+
+def search_and_scrape(query, max_results=10):
+    urls = search_duckduckgo(query, max_results)
+    if not urls:
+        urls = search_duckduckgo_fallback(query, max_results)
 
     results = []
     for url in urls:
